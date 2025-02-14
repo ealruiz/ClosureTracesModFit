@@ -1,4 +1,5 @@
 # ClosureTracesModFit
+
 Python-C++ hybrid implementation for model fitting using closure traces from interferometric visibility data.
 
 **Closure traces** are a new set of **complex closure quantities** (see Broderick & Pesce 2020, Albentosa-Ruiz & Marti-Vidal 2023), with great potential for the exploring the **intrinsic polarization structure** of radio sources, as they encode the information while being **independent of instrumental effects**, thus being robust to calibration effects such as gains and D-terms.
@@ -6,7 +7,9 @@ Python-C++ hybrid implementation for model fitting using closure traces from int
 This project aims to use these properties to improve the polarization characterization and imaging in radioastronomy, by computing the $\chi^2$ statistics from the closure traces of different model images to determine the best-fitting model.
 
 ## Implementation
+
 For high-performance exploration, we use a Python-C++ hybrid implementation:
+
 1. `_closureTraces.cpp` (C++ Module): provides high-performance functions for efficient numerical computation and multi-threading. Functions include:
   - `setData()`: Initializes the module with the visibility data, such as visibilities UVW coordinates, channel frequencies, times and weights.
   - `loadModel()`: Loads a full-Stokes model image and calculates model visibilities.
@@ -20,9 +23,11 @@ For high-performance exploration, we use a Python-C++ hybrid implementation:
 3. `setup_closureTraces.py`: build script to compile the C++ module for Python.
 
 ## User guide:
+
 To use the scripts, load the visibilities, and perform closure traces-based $\chi^2$ model fitting, follow these steps:
 
 1. **Setup the C++ Module**
+
 Compile the C++ extension by running the following command if working in a **Python environment**:
 ```sh
 python setup_closureTraces.py build_ext --inplace
@@ -36,6 +41,7 @@ python setup_closureTraces.py build_ext --inplace
 pip install numpy astropy
 ```
 2. **Integrate the C++ Module** in your Python script.
+
 Import the module and initialize the `closureTraces` class, which loads the visibility data and calls the C++ function `setData()`:
 ```sh
 ¡from closureTraces_method import closureTraces
@@ -52,6 +58,7 @@ CL_TRACES = closureTraces(visname,antennas,cellSize,Npixels,NCPUs)
 ```
 
 3. **Load Model Images**
+
 You can load the model Images for each Stokes parameters in:
 - `CL_TRACES.I[pix_x,pix_y]` $\rightarrow$ Stokes I (total flux density).
 - `CL_TRACES.Q[pix_x,pix_y]` & `CL_TRACES.U[pix_x,pix_y]` $\rightarrow$ Linear polarization components.
@@ -71,12 +78,16 @@ for ch in loadFreqChan:
     # Define your model image for Stokes I, Q, U, V based on source properties
     CL_TRACES.loadModel(chanlist=[ch])
 ```
+
 4. **Compute the $\chi^2$ statistic for model fitting**
+
 To compare data and model closure traces, compute the $\chi^2$ statistic:
 ```sh
 chi2 = CL_TRACES.getChi2()
 ```
+
 5. **Iterate to Optimize the Model**
+
 You can **update the model and the $\chi^2$ value** iteratively by repeating **steps 3 and 4**.
-* Example: A Markov Chain Monte Carlo (MCMC) approach is implemented in the script `MCMC_cltraces.py`, located in the folder MCMC_Test.
-* This script loads simulations of polarized double sources and uses MCMC to find the best model. The folder also includes example measurement sets for testing.
+> Example: A Markov Chain Monte Carlo (MCMC) approach is implemented in the script `MCMC_cltraces.py`, located in the folder MCMC_Test.
+> This script loads simulations of polarized double sources and uses MCMC to find the best model. The folder also includes example measurement sets for testing.
